@@ -1,17 +1,43 @@
-struct ConcreteOldCircle {
-    radius: f64,
+// Интерфейс для обработки платежей
+trait PaymentProcessor {
+    fn process_payment(&self, amount: f64);
 }
 
-impl OldCircle for ConcreteOldCircle {
-    fn area(&self) -> f64 {
-        std::f64::consts::PI * self.radius * self.radius
+// Класс, который мы хотим адаптировать
+struct OldPaymentSystem;
+
+impl OldPaymentSystem {
+    fn make_payment(&self, amount: f64) {
+        println!("Payment proccesing in old system: ${:.2}", amount);
+    }
+}
+
+// Адаптер для старой платежной системы
+struct OldPaymentAdapter {
+    old_system: OldPaymentSystem,
+}
+
+impl PaymentProcessor for OldPaymentAdapter {
+    fn process_payment(&self, amount: f64) {
+        self.old_system.make_payment(amount);
+    }
+}
+
+// Новый класс платежной системы
+struct NewPaymentSystem;
+
+impl PaymentProcessor for NewPaymentSystem {
+    fn process_payment(&self, amount: f64) {
+        println!("Payment proccesing in new system: ${:.2}", amount);
     }
 }
 
 fn main() {
-    let old_circle = ConcreteOldCircle { radius: 5.0 };
-    let adapter = CircleAdapter { circle: Box::new(old_circle) };
+    let new_payment = NewPaymentSystem;
+    new_payment.process_payment(100.0);
 
-    let area = adapter.get_area();
-    println!("Area: {}", area);
+    let old_payment_adapter = OldPaymentAdapter {
+        old_system: OldPaymentSystem,
+    };
+    old_payment_adapter.process_payment(50.0);
 }
